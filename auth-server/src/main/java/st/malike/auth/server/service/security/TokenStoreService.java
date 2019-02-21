@@ -5,9 +5,6 @@
  */
 package st.malike.auth.server.service.security;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -25,8 +22,12 @@ import st.malike.auth.server.model.OAuth2AuthenticationRefreshToken;
 import st.malike.auth.server.repository.OAuth2AccessTokenRepository;
 import st.malike.auth.server.repository.OAuth2RefreshTokenRepository;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
 /**
- *
  * @author malike_st
  */
 @Configuration
@@ -58,9 +59,14 @@ public class TokenStoreService implements TokenStore {
 
     @Override
     public void storeAccessToken(OAuth2AccessToken token, OAuth2Authentication authentication) {
-        OAuth2AuthenticationAccessToken oAuth2AuthenticationAccessToken = new OAuth2AuthenticationAccessToken(token,
-                authentication, authenticationKeyGenerator.extractKey(authentication));
-        mongoTemplate.save(oAuth2AuthenticationAccessToken);
+        Query query = new Query();
+        query.addCriteria(Criteria.where("tokenId").is(token.getValue()));
+        OAuth2AuthenticationAccessToken mongodbToken = mongoTemplate.findOne(query, OAuth2AuthenticationAccessToken.class, "oauth2_access_token");
+        if (null == mongodbToken || mongodbToken.getoAuth2AccessToken().getExpiration().compareTo(new Date()) < 0) {
+            OAuth2AuthenticationAccessToken oAuth2AuthenticationAccessToken = new OAuth2AuthenticationAccessToken(token, authentication,
+                    authenticationKeyGenerator.extractKey(authentication));
+            mongoTemplate.save(oAuth2AuthenticationAccessToken);
+        }
     }
 
     @Override
