@@ -55,6 +55,18 @@ public class AuthorizationServerAdapter extends AuthorizationServerConfigurerAda
                 .authenticationManager(authenticationManager);
     }
 
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.withClientDetails(clientDetailsService);
+        clients.inMemory()
+                .withClient(clientId)
+                .secret(secret)
+                .authorizedGrantTypes("password", "authorization_code", "refresh_token", "implicit")
+                .scopes("app")
+                .accessTokenValiditySeconds(60 * 30) // 30min
+                .refreshTokenValiditySeconds(60 * 60 * 24); // 24h
+    }
+
     @Bean
     @Primary
     public DefaultTokenServices tokenServices() {
@@ -70,15 +82,5 @@ public class AuthorizationServerAdapter extends AuthorizationServerConfigurerAda
         return defaultTokenEndpoint;
     }
 
-    @Override
-    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.withClientDetails(clientDetailsService);
-        clients.inMemory()
-                .withClient(clientId)
-                .secret(secret)
-                .authorizedGrantTypes("password", "authorization_code", "refresh_token", "implicit")
-                .scopes("app")
-                .accessTokenValiditySeconds(60 * 30) // 30min
-                .refreshTokenValiditySeconds(60 * 60 * 24); // 24h
-    }
+
 }
