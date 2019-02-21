@@ -81,6 +81,4 @@ public class AuthorizationServerAdapter extends AuthorizationServerConfigurerAda
         final CheckTokenEndpoint defaultTokenEndpoint = new CheckTokenEndpoint(tokenServices());
         return defaultTokenEndpoint;
     }
-
-
 }
