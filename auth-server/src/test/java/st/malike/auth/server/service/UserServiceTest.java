@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import st.malike.auth.server.AuthServerMain;
 import st.malike.auth.server.model.ClientDetail;
 import st.malike.auth.server.model.User;
-import st.malike.auth.server.service.security.ClientDetailService;
+import st.malike.auth.server.service.security.CustomClientDetailsService;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
@@ -37,7 +37,7 @@ public class UserServiceTest {
     private UserService userService;
 
     @Autowired
-    private ClientDetailService clientDetailService;
+    private CustomClientDetailsService clientDetailService;
 
 
     private ClientDetail authClient;

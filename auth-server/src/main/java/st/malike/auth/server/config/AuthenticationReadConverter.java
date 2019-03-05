@@ -2,7 +2,6 @@ package st.malike.auth.server.config;
 
 import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -13,7 +12,7 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import st.malike.auth.server.model.User;
-import st.malike.auth.server.service.security.ClientDetailService;
+import st.malike.auth.server.service.security.CustomClientDetailsService;
 import st.malike.auth.server.service.security.UserAuthConfigService;
 
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ public class AuthenticationReadConverter implements Converter<DBObject, OAuth2Au
     private UserAuthConfigService authConfigService;
 
     @Autowired
-    private ClientDetailService clientDetailsService;
+    private CustomClientDetailsService clientDetailsService;
 
     @Override
     public OAuth2Authentication convert(DBObject source) {

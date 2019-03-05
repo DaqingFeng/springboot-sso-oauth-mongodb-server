@@ -154,8 +154,8 @@ public class TokenStoreService implements TokenStore {
     @Override
     public Collection<OAuth2AccessToken> findTokensByClientIdAndUserName(String clientId, String userName) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("clientId").is(clientId));
         query.addCriteria(Criteria.where("userName").is(userName));
+        query.addCriteria(Criteria.where("clientId").is(clientId));
         List<OAuth2AuthenticationAccessToken> accessTokens = mongoTemplate.find(query, OAuth2AuthenticationAccessToken.class, "oauth2_access_token");
         return extractAccessTokens(accessTokens);
     }

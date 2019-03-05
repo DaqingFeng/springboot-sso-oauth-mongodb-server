@@ -22,7 +22,7 @@ import java.util.List;
  * @author malike_st
  */
 @Component
-public class ClientDetailService implements ClientDetailsService, ClientRegistrationService {
+public class CustomClientDetailsService implements ClientDetailsService, ClientRegistrationService {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -109,12 +109,12 @@ public class ClientDetailService implements ClientDetailsService, ClientRegistra
         ClientDetail clientDetails = new ClientDetail();
         clientDetails.setAccessTokenValiditySeconds(cd.getAccessTokenValiditySeconds());
         clientDetails.setAdditionalInformation(cd.getAdditionalInformation());
+        clientDetails.setResourceIds(cd.getResourceIds());
         clientDetails.setAuthorizedGrantTypes(cd.getAuthorizedGrantTypes());
         clientDetails.setClientId(cd.getClientId());
+        clientDetails.setRegisteredRedirectUri(cd.getRegisteredRedirectUri());
         clientDetails.setClientSecret(cd.getClientSecret());
         clientDetails.setRefreshTokenValiditySeconds(cd.getRefreshTokenValiditySeconds());
-        clientDetails.setRegisteredRedirectUri(cd.getRegisteredRedirectUri());
-        clientDetails.setResourceIds(cd.getResourceIds());
         clientDetails.setScope(cd.getScope());
         clientDetails.setScoped(cd.isScoped());
         clientDetails.setSecretRequired(cd.isSecretRequired());

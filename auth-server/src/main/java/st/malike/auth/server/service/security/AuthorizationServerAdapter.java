@@ -15,7 +15,9 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.endpoint.CheckTokenEndpoint;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
-import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 /**
  * Created by fengdaqing on 2018/4/18.
@@ -39,7 +41,13 @@ public class AuthorizationServerAdapter extends AuthorizationServerConfigurerAda
     public TokenStoreService tokenStore;
 
     @Autowired
-    private ClientDetailService clientDetailsService;
+    private CustomClientDetailsService clientDetailsService;
+
+    @Autowired
+    private CustomTokenEnhancer customTokenEnhancer;
+
+    @Autowired
+    private CustomAccessTokenConverter customAccessTokenConverter;
 
     @Override
     public void configure(final AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
@@ -49,9 +57,9 @@ public class AuthorizationServerAdapter extends AuthorizationServerConfigurerAda
 
     @Override
     public void configure(final AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        final TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
         endpoints.tokenStore(tokenStore)
-                .tokenEnhancer(tokenEnhancerChain)
+                .accessTokenConverter(accessTokenConverter())
+                .tokenEnhancer(customTokenEnhancer)
                 .authenticationManager(authenticationManager);
     }
 
@@ -63,9 +71,10 @@ public class AuthorizationServerAdapter extends AuthorizationServerConfigurerAda
                 .secret(secret)
                 .authorizedGrantTypes("password", "authorization_code", "refresh_token", "implicit")
                 .scopes("app")
-                .accessTokenValiditySeconds(60 * 30) // 30min
+                .accessTokenValiditySeconds(60 * 60 * 5) // 5h
                 .refreshTokenValiditySeconds(60 * 60 * 24); // 24h
     }
+
 
     @Bean
     @Primary
@@ -80,5 +89,14 @@ public class AuthorizationServerAdapter extends AuthorizationServerConfigurerAda
     public CheckTokenEndpoint checkTokenEndpoint() {
         final CheckTokenEndpoint defaultTokenEndpoint = new CheckTokenEndpoint(tokenServices());
         return defaultTokenEndpoint;
+    }
+
+
+    @Bean
+    public JwtAccessTokenConverter accessTokenConverter() {
+        final JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+        converter.setAccessTokenConverter(customAccessTokenConverter);
+        converter.setSigningKey("security");
+        return converter;
     }
 }
