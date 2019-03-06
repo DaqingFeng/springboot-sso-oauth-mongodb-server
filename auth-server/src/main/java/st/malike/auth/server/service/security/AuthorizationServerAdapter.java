@@ -15,9 +15,13 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.endpoint.CheckTokenEndpoint;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
-import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by fengdaqing on 2018/4/18.
@@ -44,10 +48,11 @@ public class AuthorizationServerAdapter extends AuthorizationServerConfigurerAda
     private CustomClientDetailsService clientDetailsService;
 
     @Autowired
-    private CustomTokenEnhancer customTokenEnhancer;
+    private CustomAccessTokenConverter customAccessTokenConverter;
 
     @Autowired
-    private CustomAccessTokenConverter customAccessTokenConverter;
+    private CustomTokenEnhancer customTokenEnhancer;
+
 
     @Override
     public void configure(final AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
@@ -57,10 +62,9 @@ public class AuthorizationServerAdapter extends AuthorizationServerConfigurerAda
 
     @Override
     public void configure(final AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.tokenStore(tokenStore)
-                .accessTokenConverter(accessTokenConverter())
-                .tokenEnhancer(customTokenEnhancer)
-                .authenticationManager(authenticationManager);
+        final TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
+        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(customTokenEnhancer));
+        endpoints.tokenStore(tokenStore).tokenEnhancer(tokenEnhancerChain).authenticationManager(authenticationManager);
     }
 
     @Override
@@ -89,14 +93,5 @@ public class AuthorizationServerAdapter extends AuthorizationServerConfigurerAda
     public CheckTokenEndpoint checkTokenEndpoint() {
         final CheckTokenEndpoint defaultTokenEndpoint = new CheckTokenEndpoint(tokenServices());
         return defaultTokenEndpoint;
-    }
-
-
-    @Bean
-    public JwtAccessTokenConverter accessTokenConverter() {
-        final JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setAccessTokenConverter(customAccessTokenConverter);
-        converter.setSigningKey("security");
-        return converter;
     }
 }

@@ -54,9 +54,8 @@ public class AuthenticationReadConverter implements Converter<DBObject, OAuth2Au
                 return null;
             }
             Authentication userAuthentication = new UserAuthenticationToken(u.getEmail(),
-                    (String) userAuthorization.get("credentials"), authConfigService.getRights(u));
-            OAuth2Authentication authentication = new OAuth2Authentication(oAuth2Request, userAuthentication);
-            return authentication;
+                    userAuthorization.get("credentials"), authConfigService.getRights(u));
+            return new OAuth2Authentication(oAuth2Request, userAuthentication);
         } else { //its a client
             String clientId = (String) storedRequest.get("clientId");
             ClientDetails client = null;
