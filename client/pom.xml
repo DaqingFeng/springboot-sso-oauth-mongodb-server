@@ -17,7 +17,7 @@
     <url>http://maven.apache.org</url>
 
     <properties>
-        <fastJSON.Version>1.2.41</fastJSON.Version>
+        <fastJSON.Version>1.2.83</fastJSON.Version>
     </properties>
 
     <dependencies>
